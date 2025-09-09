@@ -7,41 +7,57 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="400.0" spacing="20.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="unoeste.termo6.simulador.RegexController">
-   <children>
-      <VBox alignment="TOP_CENTER" prefHeight="95.0" prefWidth="318.0" spacing="20.0">
-         <children>
-            <Label text="Espreçao Regular" />
-            <TextField fx:id="tf_expressao" prefHeight="55.0" prefWidth="318.0" promptText="informe a espreçao regular" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </VBox>
-      <VBox alignment="TOP_CENTER" prefHeight="95.0" prefWidth="318.0" spacing="20.0">
-         <children>
-            <Label text="Teste uma palavra" />
-            <TextField fx:id="tf_palavra" prefHeight="55.0" prefWidth="318.0" promptText="informe a palavra de teste" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </VBox>
-      <Label fx:id="lb_resultado" />
-      <VBox alignment="TOP_CENTER" prefHeight="95.0" prefWidth="318.0" spacing="20.0">
-         <children>
-            <Label text="10 primeiras palabras desta linguagem" />
-            <Label fx:id="lb_palavras" />
-         </children>
-         <padding>
-            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
-         </padding>
-      </VBox>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
-         <children>
-            <Button mnemonicParsing="false" onAction="#onTestar" text="Testar Palavra" />
-            <Button mnemonicParsing="false" onAction="#onGerar" text="Gerar Palavras" />
-         </children>
-      </HBox>
-   </children>
+<VBox alignment="TOP_CENTER" prefHeight="500.0" prefWidth="500.0" spacing="30.0"
+      xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="unoeste.termo6.simulador.RegexController"
+      style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e); -fx-padding: 30;">
+
+    <children>
+        <!-- Campo de Expressão Regular -->
+        <VBox alignment="TOP_CENTER" spacing="15.0">
+            <children>
+                <Label text="Expressão Regular"
+                       style="-fx-text-fill: #f1c40f; -fx-font-size: 22px; -fx-font-weight: bold;" />
+                <TextField fx:id="tf_expressao" prefHeight="50.0" prefWidth="350.0"
+                           promptText="Informe a expressão regular"
+                           style="-fx-background-radius: 10; -fx-background-color: #ecf0f1; -fx-font-size: 16px; -fx-padding: 8;" />
+            </children>
+        </VBox>
+
+        <!-- Campo de Palavra -->
+        <VBox alignment="TOP_CENTER" spacing="15.0">
+            <children>
+                <Label text="Teste uma Palavra"
+                       style="-fx-text-fill: #f1c40f; -fx-font-size: 22px; -fx-font-weight: bold;" />
+                <TextField fx:id="tf_palavra" prefHeight="50.0" prefWidth="350.0"
+                           promptText="Informe a palavra de teste"
+                           style="-fx-background-radius: 10; -fx-background-color: #ecf0f1; -fx-font-size: 16px; -fx-padding: 8;" />
+            </children>
+        </VBox>
+
+        <!-- Resultado -->
+        <Label fx:id="lb_resultado"
+               style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+
+        <!-- Geração de Palavras -->
+        <VBox alignment="TOP_CENTER" spacing="15.0">
+            <children>
+                <Label text="10 primeiras palavras desta linguagem"
+                       style="-fx-text-fill: #1abc9c; -fx-font-size: 20px; -fx-font-weight: bold;" />
+                <Label fx:id="lb_palavras"
+                       style="-fx-text-fill: #ecf0f1; -fx-font-size: 16px; -fx-font-style: italic;" />
+            </children>
+        </VBox>
+
+        <!-- Botões -->
+        <HBox alignment="CENTER" spacing="30.0">
+            <children>
+                <Button text="Testar Palavra" onAction="#onTestar"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 15; -fx-padding: 10 20; -fx-cursor: hand;" />
+
+                <Button text="Gerar Palavras" onAction="#onGerar"
+                        style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-font-size: 16px; -fx-background-radius: 15; -fx-padding: 10 20; -fx-cursor: hand;" />
+            </children>
+        </HBox>
+    </children>
 </VBox>
