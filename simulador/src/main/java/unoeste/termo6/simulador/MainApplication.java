@@ -10,9 +10,7 @@ import java.io.IOException;
 
 
 public class MainApplication  extends Application {
-
     public void start(Stage stage) throws IOException {
-
         FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource("main-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Simulador");
