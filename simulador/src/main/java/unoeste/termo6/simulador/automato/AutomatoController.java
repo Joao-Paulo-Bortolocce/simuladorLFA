@@ -17,7 +17,6 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import unoeste.termo6.simulador.MainController;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -362,7 +361,7 @@ public class AutomatoController {
             Optional<String> result = "".describeConstable();
             try {
                 Stage stage = new Stage();
-                FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource("texto-view.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(TextoController.class.getResource("texto-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
 
                 stage.setTitle("Criar ligação");
@@ -482,7 +481,7 @@ public class AutomatoController {
             Optional<String> result = "".describeConstable();
             try {
                 Stage stage = new Stage();
-                FXMLLoader fxmlLoader = new FXMLLoader(MainController.class.getResource("texto-view.fxml"));
+                FXMLLoader fxmlLoader = new FXMLLoader(TextoController.class.getResource("texto-view.fxml"));
                 Scene scene = new Scene(fxmlLoader.load());
 
                 // Obtém a instância do controller que acabou de ser criada e chama o método.
