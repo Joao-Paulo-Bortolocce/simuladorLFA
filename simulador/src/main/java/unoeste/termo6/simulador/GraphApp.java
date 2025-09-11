@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class GraphApp extends Application {
-
     @Override
     public void start(Stage stage) {
         SwingNode swingNode = new SwingNode();
@@ -25,7 +24,7 @@ public class GraphApp extends Application {
             try {
                 Object v1 = graph.insertVertex(parent, null, "A", 20, 20, 80, 30);
                 Object v2 = graph.insertVertex(parent, null, "B", 240, 150, 80, 30);
-//                graph.insertEdge(parent, null, "Conexão", v1, v2);
+                graph.insertEdge(parent, null, "Conexão", v1, v2);
             } finally {
                 graph.getModel().endUpdate();
             }
