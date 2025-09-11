@@ -1,5 +1,6 @@
 package unoeste.termo6.simulador.automato;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
@@ -404,6 +405,7 @@ public class AutomatoController {
                     Transicao novaTransicao = new Transicao(estadoOrigemLigacao, estadoClicado, novaCondicao);
                     listaTransicoesModelo.add(novaTransicao);
                     Ligacao novaLigacao = new Ligacao(novaTransicao.getOrigem(), novaTransicao.getDestino(), novaTransicao.getCondicao(), 0);
+                    estadoOrigemLigacao.adicionarTransicao(novaTransicao);
                     mapaTransicoes.put(novaLigacao, novaTransicao);
                     g_transicoes.getChildren().add(novaLigacao);
                     configurarEventosTransicao(novaLigacao);
@@ -444,6 +446,8 @@ public class AutomatoController {
             Map.Entry<Ligacao, Transicao> entry = iterator.next();
             Transicao transicao = entry.getValue();
             if (transicao.getOrigem() == estadoParaRemover || transicao.getDestino() == estadoParaRemover) {
+                if (transicao.getDestino() == estadoParaRemover)
+                    transicao.getOrigem().removerTransicao(transicao);
                 setasParaRemover.add(entry.getKey());
                 listaTransicoesModelo.remove(transicao);
                 iterator.remove();
@@ -464,6 +468,8 @@ public class AutomatoController {
         if (transicao != null) {
             Estado origem = transicao.getOrigem();
             Estado destino = transicao.getDestino();
+
+            origem.removerTransicao(transicao);
 
             g_transicoes.getChildren().remove(ligacaoParaRemover);
             mapaTransicoes.remove(ligacaoParaRemover);
@@ -543,6 +549,14 @@ public class AutomatoController {
                     double sinal = (i % 2 == 0) ? 1.0 : -1.0;
                     ligacoes.get(i).setCurvatura(magnitude * sinal);
                 }
+            }
+        }
+    }
+
+    public void onAtivar(ActionEvent actionEvent) {
+        if (estadoInicialAtual != null) {
+            for (int i = 0; i < estadoInicialAtual.getTransicoes().size(); i++) {
+                System.out.println(estadoInicialAtual.getTransicoes().get(i).getOrigem().getId() + "  -> " +  estadoInicialAtual.getTransicoes().get(i).getCondicao() + " -> " + estadoInicialAtual.getTransicoes().get(i).getDestino().getId());
             }
         }
     }

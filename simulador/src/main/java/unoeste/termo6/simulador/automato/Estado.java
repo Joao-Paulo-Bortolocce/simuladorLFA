@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
 
+import java.util.ArrayList;
+
 public class Estado {
     private final int id;
     private final DoubleProperty x = new SimpleDoubleProperty(); // encapsula um valor de double, permitindo a gestão observável e bidirecional desse valor. Liga e desvincula valores.
@@ -12,6 +14,7 @@ public class Estado {
     private TipoEstado tipo;
     private StackPane representacaoVisual;
     private Group setaInicialVisual = null;
+    private ArrayList<Transicao> transicoes;
 
     public enum TipoEstado {
         NORMAL, INICIAL, FINAL, INICIAL_E_FINAL
@@ -22,6 +25,7 @@ public class Estado {
         this.x.set(x);
         this.y.set(y);
         this.tipo = tipo;
+        this.transicoes = new ArrayList<>();
     }
 
     public int getId() {
@@ -62,6 +66,22 @@ public class Estado {
 
     public void setSetaInicialVisual(Group setaInicialVisual) {
         this.setaInicialVisual = setaInicialVisual;
+    }
+
+    public ArrayList<Transicao> getTransicoes() {
+        return transicoes;
+    }
+
+    public void adicionarTransicao(Transicao transicao) {
+        transicoes.add(transicao);
+    }
+
+    public void atualizarTransicao(Transicao transicao, int i) {
+        transicoes.set(i, transicao);
+    }
+
+    public void removerTransicao(Transicao transicao) {
+        transicoes.remove(transicao);
     }
 
     public void setRepresentacaoVisual(StackPane representacaoVisual) {

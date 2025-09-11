@@ -14,7 +14,7 @@ public class RegexController {
     public Label lb_palavras;
     public Label lb_resultado;
     String palavra;
-    String expressao="";
+    String expressao = "";
     Pattern regex;
     ArrayList<String> alfabeto,palavras;
     boolean troca,temMaximo;
@@ -25,7 +25,7 @@ public class RegexController {
         palavra = tf_palavra.getText().replaceAll(" ","");
         boolean resultado = testaPalavra(palavra);
         if (palavra.compareTo("") == 0)
-            palavra="ε";
+            palavra = "ε";
         if (resultado)
             lb_resultado.setText("A palavra "+palavra+" pertence a linguagem");
         else

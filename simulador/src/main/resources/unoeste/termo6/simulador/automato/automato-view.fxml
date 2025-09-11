@@ -45,6 +45,23 @@
                               style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
                               onMouseEntered="#onToggleButtonHover" onMouseExited="#onToggleButtonExit" />
+
+                <Separator orientation="VERTICAL" prefHeight="100.0" prefWidth="0.0">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin>
+                </Separator>
+
+                <ToggleButton text="Criar Ligação" onAction="#onAtivar"
+                              style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
+                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
+                              onMouseEntered="#onToggleButtonHover" onMouseExited="#onToggleButtonExit" />
+
+                <Separator orientation="VERTICAL" prefHeight="100.0" prefWidth="0.0">
+                    <HBox.margin>
+                        <Insets left="10.0" right="10.0" />
+                    </HBox.margin>
+                </Separator>
             </items>
         </ToolBar>
     </top>
