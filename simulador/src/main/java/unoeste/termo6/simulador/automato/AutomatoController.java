@@ -171,31 +171,6 @@ public class AutomatoController {
         }
     }
 
-    /*@FXML
-    public void initialize() {
-        tg_tipoEstado = new ToggleGroup();
-        btEstado.setToggleGroup(tg_tipoEstado);
-        btInicial.setToggleGroup(tg_tipoEstado);
-        btInicialFinal.setToggleGroup(tg_tipoEstado);
-        btFinal.setToggleGroup(tg_tipoEstado);
-        tg_acao = new ToggleGroup();
-        btLigar.setToggleGroup(tg_acao);
-
-        tg_tipoEstado.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle != null)
-                tg_acao.selectToggle(null);
-        });
-        tg_acao.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
-            if (newToggle != null)
-                tg_tipoEstado.selectToggle(null);
-        });
-        btEstado.setSelected(true);
-
-        transicoesGroup = new Group();
-        estadosGroup = new Group();
-        painelAutomato.getChildren().addAll(transicoesGroup, estadosGroup);
-    }*/
-
     @FXML
     void manipularClickPainel(MouseEvent event) {
         if (event.getTarget() == painel_automato) {

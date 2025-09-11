@@ -1,4 +1,4 @@
-package unoeste.termo6.simulador;
+package unoeste.termo6.simulador.regex;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Label;
