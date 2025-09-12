@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -47,6 +48,8 @@ public class AutomatoController {
 
     public TextField tf_palavra;
     public Label lb_resultado;
+    public HBox hb_palavra;
+    public Label[] lb;
 
     private ToggleGroup tg_tipo_estado;
     private ToggleGroup tg_acao;
@@ -596,6 +599,7 @@ public class AutomatoController {
             bt_proximo.setDisable(false);
             lb_resultado.setText("");
 
+
             mapaEstados.values().forEach(estado -> {
                 Circle c = recuperarCirculoDoEstado(estado);
                 if (c != null) {
@@ -608,6 +612,15 @@ public class AutomatoController {
             atuais_manual.add(estadoInicialAtual);
             estadoInicialAtual.getCirculo().setFill(Color.ORANGE);
             palavra = tf_palavra.getText();
+
+            lb = new Label[palavra.length()];
+
+            for (int i = 0; i < palavra.length(); i++) {
+                lb[i] = new Label(String.valueOf(palavra.charAt(i)));
+                lb[i].setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+                hb_palavra.getChildren().add(lb[i]);
+            }
+            hb_palavra.setVisible(true);
         }
     }
 
@@ -621,12 +634,14 @@ public class AutomatoController {
                 ArrayList<Estado> destinos = saida(transicoes, palavra.charAt(i_manual));
                 atuais_manual.addAll(destinos);
             }
+
             mapaEstados.values().forEach(estado -> {
                 Circle c = recuperarCirculoDoEstado(estado);
-                if (c != null) {
+                if (c != null)
                     c.setFill(Color.LIGHTYELLOW);
-                }
             });
+
+
             for (int j = 0; j < tam; j++) {
                 atuais_manual.getFirst().getCirculo().setFill(Color.LIGHTYELLOW);
                 atuais_manual.removeFirst();
@@ -634,11 +649,16 @@ public class AutomatoController {
             for (Estado estado : atuais_manual)
                 estado.getCirculo().setFill(Color.ORANGE);
             i_manual++;
+            lb[i_manual - 1].setStyle("-fx-text-fill: orange; -fx-font-size: 18px;");
         }
         if (i_manual == palavra.length()) {
             bt_proximo.setDisable(true);
             bt_manual.setDisable(false);
             bt_automatico.setDisable(false);
+
+            hb_palavra.getChildren().clear();
+            hb_palavra.setVisible(false);
+
             if(palavra.isEmpty())
                 palavra ="ε";
             int i = 0;
@@ -662,6 +682,13 @@ public class AutomatoController {
     public void onAutomatico(ActionEvent actionEvent) {
         if (estadoInicialAtual != null) {
             AtomicReference<String> palavra = new AtomicReference<>(tf_palavra.getText());
+            lb = new Label[palavra.get().length()];
+            for (int i = 0; i < palavra.get().length(); i++) {
+                lb[i] = new Label(String.valueOf(palavra.get().charAt(i)));
+                lb[i].setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+                hb_palavra.getChildren().add(lb[i]);
+            }
+            hb_palavra.setVisible(true);
             lb_resultado.setText("");
 
             mapaEstados.values().forEach(estado -> {
@@ -679,9 +706,12 @@ public class AutomatoController {
             if (circuloInicial != null)
                 circuloInicial.setFill(Color.ORANGE);
 
+            AtomicReference<Integer> i = new AtomicReference<>(0);
             for (char caractere : palavra.get().toCharArray()) {
                 PauseTransition passo = new PauseTransition(Duration.millis(800));
                 passo.setOnFinished(e -> {
+                    lb[i.get()].setStyle("-fx-text-fill: orange; -fx-font-size: 18px;");
+                    i.set(i.get() + 1);
                     ArrayList<Estado> estadosAtuais = atuaisRef.get();
                     if (!estadosAtuais.isEmpty()) {
                         Set<Estado> proximoSet = new HashSet<>();
@@ -708,6 +738,8 @@ public class AutomatoController {
 
             animacaoSequencial.setOnFinished(e -> {
                 ArrayList<Estado> estadosFinais = atuaisRef.get();
+                hb_palavra.getChildren().clear();
+                hb_palavra.setVisible(false);
                 boolean aceita = false;
                 for(Estado finalEstado : estadosFinais)
                     if (finalEstado.getTipo() == FINAL || finalEstado.getTipo() == INICIAL_E_FINAL) {
@@ -736,6 +768,9 @@ public class AutomatoController {
     public void onLimpar(ActionEvent actionEvent) {
         estadoInicialAtual = null;
         estadoOrigemLigacao = null;
+
+        hb_palavra.getChildren().clear();
+        hb_palavra.setVisible(false);
 
         bt_manual.setDisable(false);
         bt_automatico.setDisable(false);

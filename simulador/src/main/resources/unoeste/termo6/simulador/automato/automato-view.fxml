@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+
 <BorderPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="unoeste.termo6.simulador.automato.AutomatoController">
     <top>
+        <VBox>
         <ToolBar style="-fx-background-color: #2c3e50;">
             <items>
-                <Label text="Tipo de Estado: " style="-fx-text-fill: #f1c40f; -fx-font-size: 18">
+                <Label style="-fx-text-fill: #f1c40f; -fx-font-size: 18" text="Tipo de Estado: ">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
@@ -18,22 +26,10 @@
                         <Insets right="10.0" />
                     </HBox.margin>
                 </Label>
-                <ToggleButton fx:id="bt_estado" text="Normal"
-                              style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                              onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
-                <ToggleButton fx:id="bt_inicial" text="Inicial"
-                              style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                              onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
-                <ToggleButton fx:id="bt_inicial_final" text="Inicial e Final"
-                              style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                              onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
-                <ToggleButton fx:id="bt_final" text="Final"
-                              style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                              onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <ToggleButton fx:id="bt_estado" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Normal" />
+                <ToggleButton fx:id="bt_inicial" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Inicial" />
+                <ToggleButton fx:id="bt_inicial_final" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Inicial e Final" />
+                <ToggleButton fx:id="bt_final" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Final" />
 
                 <Separator orientation="VERTICAL" prefHeight="100.0" prefWidth="0.0">
                     <HBox.margin>
@@ -41,10 +37,7 @@
                     </HBox.margin>
                 </Separator>
 
-                <ToggleButton fx:id="bt_ligar" text="Criar Ligação"
-                              style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                              onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <ToggleButton fx:id="bt_ligar" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Criar Ligação" />
 
                 <Separator orientation="VERTICAL" prefHeight="100.0" prefWidth="0.0">
                     <HBox.margin>
@@ -52,20 +45,11 @@
                     </HBox.margin>
                 </Separator>
 
-                <Button fx:id="bt_automatico" text="Teste Automático" onAction="#onAutomatico"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                        onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <Button fx:id="bt_automatico" onAction="#onAutomatico" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Teste Automático" />
 
-                <Button fx:id="bt_manual" text="Teste Manual" onAction="#onPassoPasso"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                        onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <Button fx:id="bt_manual" onAction="#onPassoPasso" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Teste Manual" />
 
-                <Button fx:id="bt_proximo" text="Pŕoximo Passo" onAction="#onProximoPasso" disable="true"
-                        style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-                                     -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                        onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <Button fx:id="bt_proximo" disable="true" onAction="#onProximoPasso" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                                      -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Pŕoximo Passo" />
 
                 <Separator orientation="VERTICAL" prefHeight="100.0" prefWidth="0.0">
                     <HBox.margin>
@@ -73,7 +57,7 @@
                     </HBox.margin>
                 </Separator>
 
-                <Label text="Palavra: " style="-fx-text-fill: #f1c40f; -fx-font-size: 18">
+                <Label style="-fx-text-fill: #f1c40f; -fx-font-size: 18" text="Palavra: ">
                     <font>
                         <Font name="System Bold" size="14.0" />
                     </font>
@@ -103,15 +87,14 @@
                     </HBox.margin>
                 </Separator>
 
-                <Button fx:id="bt_limpar" text="Limpar" onAction="#onLimpar"
-                        style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;
-               -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);"
-                        onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" />
+                <Button fx:id="bt_limpar" onAction="#onLimpar" onMouseEntered="#onBotaoHover" onMouseExited="#onBotaoSair" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand;                -fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);" text="Limpar" />
             </items>
         </ToolBar>
+            <HBox fx:id="hb_palavra" alignment="center" style="-fx-background-color: linear-gradient(to bottom, #2c3e50, #34495e); -fx-padding: 10" visible="false">
+            </HBox>
+        </VBox>
     </top>
     <center>
-        <Pane fx:id="painel_automato" onMouseClicked="#manipularClickPainel"
-              style="-fx-background-color: #f8f8f8;" />
+        <Pane fx:id="painel_automato" onMouseClicked="#manipularClickPainel" style="-fx-background-color: #f8f8f8;" />
     </center>
 </BorderPane>
