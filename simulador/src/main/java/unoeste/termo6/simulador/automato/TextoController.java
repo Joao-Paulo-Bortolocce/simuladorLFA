@@ -10,13 +10,11 @@ public class TextoController {
 
     @FXML
     public void initialize() {
-        // Define o foco no campo de texto para que o usuário possa digitar imediatamente
         tf_texto.requestFocus();
     }
 
     public void setTextoInicial(String textoInicial) {
         tf_texto.setText(textoInicial);
-        // Posiciona o cursor no final do texto
         tf_texto.positionCaret(textoInicial.length());
     }
 

@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Circle;
 
 import java.util.ArrayList;
 
@@ -11,9 +12,12 @@ public class Estado {
     private final int id;
     private final DoubleProperty x = new SimpleDoubleProperty(); // encapsula um valor de double, permitindo a gestão observável e bidirecional desse valor. Liga e desvincula valores.
     private final DoubleProperty y = new SimpleDoubleProperty();
+
     private TipoEstado tipo;
     private StackPane representacaoVisual;
     private Group setaInicialVisual = null;
+    private Circle circulo;
+
     private ArrayList<Transicao> transicoes;
 
     public enum TipoEstado {
@@ -26,6 +30,7 @@ public class Estado {
         this.y.set(y);
         this.tipo = tipo;
         this.transicoes = new ArrayList<>();
+        this.circulo = null;
     }
 
     public int getId() {
@@ -46,6 +51,14 @@ public class Estado {
 
     public DoubleProperty yProperty() {
         return y;
+    }
+
+    public Circle getCirculo() {
+        return circulo;
+    }
+
+    public void setCirculo(Circle circulo) {
+        this.circulo = circulo;
     }
 
     public TipoEstado getTipo() {

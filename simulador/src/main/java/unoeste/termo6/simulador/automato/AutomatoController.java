@@ -1,10 +1,13 @@
 package unoeste.termo6.simulador.automato;
 
+import javafx.animation.PauseTransition;
+import javafx.animation.SequentialTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Cursor;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -18,9 +21,14 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextBoundsType;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Duration;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
+import static unoeste.termo6.simulador.automato.Estado.TipoEstado.FINAL;
+import static unoeste.termo6.simulador.automato.Estado.TipoEstado.INICIAL_E_FINAL;
 
 public class AutomatoController {
     private static final double RAIO_ESTADO = 25;
@@ -30,8 +38,15 @@ public class AutomatoController {
     public ToggleButton bt_inicial_final;
     public ToggleButton bt_final;
     public ToggleButton bt_ligar;
+    public Button bt_limpar;
+    public Button bt_automatico;
+    public Button bt_manual;
+    public Button bt_proximo;
 
     public Pane painel_automato;
+
+    public TextField tf_palavra;
+    public Label lb_resultado;
 
     private ToggleGroup tg_tipo_estado;
     private ToggleGroup tg_acao;
@@ -49,11 +64,20 @@ public class AutomatoController {
     private double offsetX, offsetY;
 
     private String botao_azul_padrao;
-    private String botao_verde_padrao;
-    private String botao_azul_selecionado;
-    private String botao_verde_selecionado;
     private String botao_azul_hover;
+    private String botao_azul_selecionado;
+
+    private String botao_verde_padrao;
     private String botao_verde_hover;
+    private String botao_verde_selecionado;
+
+    private String botao_vermelho_padrao;
+    private String botao_vermelho_hover;
+
+    private String palavra;
+
+    private ArrayList<Estado> atuais_manual;
+    private int i_manual;
 
     @FXML
     public void initialize() {
@@ -79,8 +103,6 @@ public class AutomatoController {
         g_estados = new Group();
         painel_automato.getChildren().addAll(g_transicoes, g_estados);
 
-        // Define os estilos padrão e selecionados (com borda) aqui no initialize
-        // para os botões azuis
         botao_azul_padrao = "-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
                 "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
         botao_azul_selecionado = "-fx-background-color: #2980b9; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
@@ -88,7 +110,6 @@ public class AutomatoController {
         botao_azul_hover = "-fx-background-color: #4fb8ff; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
                 "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
 
-        // para o botão verde (btLigar)
         botao_verde_padrao = "-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
                 "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
         botao_verde_selecionado = "-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
@@ -96,22 +117,21 @@ public class AutomatoController {
         botao_verde_hover = "-fx-background-color: #3ddc83; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
                 "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
 
+        botao_vermelho_padrao = "-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
+                "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
+        botao_vermelho_hover = "-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-font-size: 14px; -fx-background-radius: 8; -fx-padding: 8 15; -fx-cursor: hand; " +
+                "-fx-border-color: transparent; -fx-border-width: 2px; -fx-border-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 1);";
 
-        // Listener para o grupo de tipo de estado (botões azuis)
         tg_tipo_estado.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (oldToggle != null) {
-                // Restaura o estilo do botão que foi deselecionado
                 ToggleButton oldBtn = (ToggleButton) oldToggle;
                 oldBtn.setStyle(botao_azul_padrao);
             }
             if (newToggle != null) {
-                // Aplica o estilo de seleção ao novo botão
                 ToggleButton newBtn = (ToggleButton) newToggle;
                 newBtn.setStyle(botao_azul_selecionado);
-                tg_acao.selectToggle(null); // Deseleciona o outro grupo
+                tg_acao.selectToggle(null);
             } else {
-                // Se nenhum botão estiver selecionado (ex: por deseleção programática),
-                // garanta que todos voltem ao estado normal
                 bt_estado.setStyle(botao_azul_padrao);
                 bt_inicial.setStyle(botao_azul_padrao);
                 bt_inicial_final.setStyle(botao_azul_padrao);
@@ -119,56 +139,54 @@ public class AutomatoController {
             }
         });
 
-        // Listener para o grupo de ações (botão verde)
         tg_acao.selectedToggleProperty().addListener((obs, oldToggle, newToggle) -> {
             if (oldToggle != null) {
-                // Restaura o estilo do botão que foi deselecionado (btLigar)
                 ToggleButton oldBtn = (ToggleButton) oldToggle;
-                if (oldBtn == bt_ligar) { // Apenas btLigar está neste grupo, mas é bom verificar
+                if (oldBtn == bt_ligar)
                     oldBtn.setStyle(botao_verde_padrao);
-                }
             }
             if (newToggle != null) {
-                // Aplica o estilo de seleção ao novo botão (btLigar)
                 ToggleButton newBtn = (ToggleButton) newToggle;
-                if (newBtn == bt_ligar) {
+                if (newBtn == bt_ligar)
                     newBtn.setStyle(botao_verde_selecionado);
-                }
-                tg_tipo_estado.selectToggle(null); // Deseleciona o outro grupo
-            } else {
-                // Se nenhum botão estiver selecionado (ex: por deseleção programática)
+                tg_tipo_estado.selectToggle(null);
+            } else
                 bt_ligar.setStyle(botao_verde_padrao);
-            }
         });
-
-        // Garante que o btEstado já comece selecionado com o estilo correto
         bt_estado.setSelected(true);
-        bt_estado.setStyle(botao_azul_selecionado); // Aplica o estilo de seleção inicial
+        bt_estado.setStyle(botao_azul_selecionado);
     }
 
-    // Métodos de hover (onMouseEntered e onMouseExited)
     @FXML
-    private void onToggleButtonHover(MouseEvent event) {
-        ToggleButton button = (ToggleButton) event.getSource();
-        if (!button.isSelected()) { // Só aplica o hover se o botão não estiver selecionado
-            if (button == bt_ligar) {
-                button.setStyle(botao_verde_hover);
-            } else {
+    private void onBotaoHover(MouseEvent event) {
+        Object source = event.getSource();
+        if (event.getSource() instanceof ToggleButton button) {
+            if (!button.isSelected())
+                if (button == bt_ligar)
+                    button.setStyle(botao_verde_hover);
+                else
+                    button.setStyle(botao_azul_hover);
+        } else if (source instanceof Button button)
+            if (button == bt_limpar)
+                button.setStyle(botao_vermelho_hover);
+            else
                 button.setStyle(botao_azul_hover);
-            }
-        }
     }
 
     @FXML
-    private void onToggleButtonExit(MouseEvent event) {
-        ToggleButton button = (ToggleButton) event.getSource();
-        if (!button.isSelected()) { // Só reverte o estilo se o botão não estiver selecionado
-            if (button == bt_ligar) {
-                button.setStyle(botao_verde_padrao);
-            } else {
+    private void onBotaoSair(MouseEvent event) {
+        Object source = event.getSource();
+        if (event.getSource() instanceof ToggleButton button) {
+            if (!button.isSelected())
+                if (button == bt_ligar)
+                    button.setStyle(botao_verde_padrao);
+                else
+                    button.setStyle(botao_azul_padrao);
+        } else if (source instanceof Button button)
+            if (button == bt_limpar)
+                button.setStyle(botao_vermelho_padrao);
+            else
                 button.setStyle(botao_azul_padrao);
-            }
-        }
     }
 
     @FXML
@@ -178,9 +196,9 @@ public class AutomatoController {
             if (tipoSelecionado != null) {
                 Estado.TipoEstado tipo = Estado.TipoEstado.NORMAL;
                 if (tipoSelecionado == bt_inicial) tipo = Estado.TipoEstado.INICIAL;
-                else if (tipoSelecionado == bt_final) tipo = Estado.TipoEstado.FINAL;
+                else if (tipoSelecionado == bt_final) tipo = FINAL;
                 else if (tipoSelecionado == bt_inicial_final) { // <-- ADICIONE ESTE ELSE IF
-                    tipo = Estado.TipoEstado.INICIAL_E_FINAL;
+                    tipo = INICIAL_E_FINAL;
                 }
                 criarNovoEstado(event.getX(), event.getY(), tipo);
             }
@@ -196,14 +214,12 @@ public class AutomatoController {
 
     private void criarNovoEstado(double x, double y, Estado.TipoEstado tipo) {
         // Verifica se o novo estado terá propriedade inicial
-        if (tipo == Estado.TipoEstado.INICIAL || tipo == Estado.TipoEstado.INICIAL_E_FINAL)
+        if (tipo == Estado.TipoEstado.INICIAL || tipo == INICIAL_E_FINAL)
             // Se já existe um estado inicial, precisamos "rebaixá-lo"
             if (estadoInicialAtual != null) {
-                // AQUI ESTÁ A LÓGICA: Se o antigo era INICIAL_E_FINAL, vira FINAL. Senão, vira NORMAL.
-                Estado.TipoEstado novoTipoParaAntigoInicial = estadoInicialAtual.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL
-                        ? Estado.TipoEstado.FINAL
+                Estado.TipoEstado novoTipoParaAntigoInicial = estadoInicialAtual.getTipo() == INICIAL_E_FINAL
+                        ? FINAL
                         : Estado.TipoEstado.NORMAL;
-                // Usa o método mudarTipoEstado para garantir que a interface seja atualizada corretamente
                 mudarTipoEstado(estadoInicialAtual, novoTipoParaAntigoInicial);
             }
 
@@ -212,7 +228,7 @@ public class AutomatoController {
         Estado novoEstado = new Estado(novoId, x, y, tipo);
 
         // Atualiza a referência para o novo estado inicial
-        if (novoEstado.getTipo() == Estado.TipoEstado.INICIAL || novoEstado.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL)
+        if (novoEstado.getTipo() == Estado.TipoEstado.INICIAL || novoEstado.getTipo() == INICIAL_E_FINAL)
             this.estadoInicialAtual = novoEstado;
 
         StackPane visualEstado = criarVisualEstado(novoEstado);
@@ -234,13 +250,13 @@ public class AutomatoController {
         textoId.setBoundsType(TextBoundsType.VISUAL);
         stackPane.getChildren().addAll(circuloPrincipal, textoId);
 
-        if (estado.getTipo() == Estado.TipoEstado.FINAL || estado.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL) {
+        if (estado.getTipo() == FINAL || estado.getTipo() == INICIAL_E_FINAL) {
             Circle circuloFinal = new Circle(RAIO_ESTADO - 5, Color.TRANSPARENT);
             circuloFinal.setStroke(Color.BLACK);
             circuloFinal.setStrokeWidth(1.5);
             stackPane.getChildren().add(circuloFinal);
         }
-        if (estado.getTipo() == Estado.TipoEstado.INICIAL || estado.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL) {
+        if (estado.getTipo() == Estado.TipoEstado.INICIAL || estado.getTipo() == INICIAL_E_FINAL) {
             Polygon setaInicial = new Polygon(5.0, 0.0, -10.0, 7.0, -10.0, -7.0);
             setaInicial.setFill(Color.BLACK);
             Group grupoSetaInicial = new Group(setaInicial);
@@ -249,6 +265,7 @@ public class AutomatoController {
             g_transicoes.getChildren().add(grupoSetaInicial);
             estado.setSetaInicialVisual(grupoSetaInicial);
         }
+        estado.setCirculo(circuloPrincipal);
         return stackPane;
     }
 
@@ -290,10 +307,10 @@ public class AutomatoController {
         inicialItem.setOnAction(e -> mudarTipoEstado(estado, Estado.TipoEstado.INICIAL));
 
         MenuItem finalItem = new MenuItem("Final");
-        finalItem.setOnAction(e -> mudarTipoEstado(estado, Estado.TipoEstado.FINAL));
+        finalItem.setOnAction(e -> mudarTipoEstado(estado, FINAL));
 
         MenuItem inicialFinalItem = new MenuItem("Inicial e Final");
-        inicialFinalItem.setOnAction(e -> mudarTipoEstado(estado, Estado.TipoEstado.INICIAL_E_FINAL));
+        inicialFinalItem.setOnAction(e -> mudarTipoEstado(estado, INICIAL_E_FINAL));
 
         tipoMenu.getItems().addAll(normalItem, inicialItem, finalItem, inicialFinalItem);
 
@@ -307,12 +324,12 @@ public class AutomatoController {
 
     private void mudarTipoEstado(Estado estado, Estado.TipoEstado novoTipo) {
         if (estado.getTipo() != novoTipo) {
-            boolean tornandoSeInicial = (novoTipo == Estado.TipoEstado.INICIAL || novoTipo == Estado.TipoEstado.INICIAL_E_FINAL);
-            boolean eraInicial = (estado.getTipo() == Estado.TipoEstado.INICIAL || estado.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL);
+            boolean tornandoSeInicial = (novoTipo == Estado.TipoEstado.INICIAL || novoTipo == INICIAL_E_FINAL);
+            boolean eraInicial = (estado.getTipo() == Estado.TipoEstado.INICIAL || estado.getTipo() == INICIAL_E_FINAL);
 
             if (tornandoSeInicial && estadoInicialAtual != null && estadoInicialAtual != estado) {
-                Estado.TipoEstado tipoAntigo = estadoInicialAtual.getTipo() == Estado.TipoEstado.INICIAL_E_FINAL
-                        ? Estado.TipoEstado.FINAL
+                Estado.TipoEstado tipoAntigo = estadoInicialAtual.getTipo() == INICIAL_E_FINAL
+                        ? FINAL
                         : Estado.TipoEstado.NORMAL;
                 estadoInicialAtual.setTipo(tipoAntigo);
                 redesenharEstado(estadoInicialAtual);
@@ -358,7 +375,6 @@ public class AutomatoController {
             Optional<Ligacao> ligacaoExistenteOpt = mapaTransicoes.keySet().stream()
                     .filter(lig -> lig.getOrigem() == estadoOrigemLigacao && lig.getDestino() == estadoClicado)
                     .findFirst();
-
             Optional<String> result = "".describeConstable();
             try {
                 Stage stage = new Stage();
@@ -442,7 +458,7 @@ public class AutomatoController {
             estadoInicialAtual = null;
         List<Ligacao> setasParaRemover = new ArrayList<>();
         Iterator<Map.Entry<Ligacao, Transicao>> iterator = mapaTransicoes.entrySet().iterator();
-        while (iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<Ligacao, Transicao> entry = iterator.next();
             Transicao transicao = entry.getValue();
             if (transicao.getOrigem() == estadoParaRemover || transicao.getDestino() == estadoParaRemover) {
@@ -553,11 +569,173 @@ public class AutomatoController {
         }
     }
 
-    public void onAtivar(ActionEvent actionEvent) {
-        if (estadoInicialAtual != null) {
-            for (int i = 0; i < estadoInicialAtual.getTransicoes().size(); i++) {
-                System.out.println(estadoInicialAtual.getTransicoes().get(i).getOrigem().getId() + "  -> " +  estadoInicialAtual.getTransicoes().get(i).getCondicao() + " -> " + estadoInicialAtual.getTransicoes().get(i).getDestino().getId());
+    private Circle recuperarCirculoDoEstado(Estado estado) {
+        if (estado != null && estado.getRepresentacaoVisual() != null) {
+            Node noDoCirculo = estado.getRepresentacaoVisual().lookup(".circulo-principal");
+            if (noDoCirculo instanceof Circle)
+                return (Circle) noDoCirculo;
+        }
+        return null;
+    }
+
+    public ArrayList<Estado> saida(ArrayList<Transicao> transicoes, char caractere) {
+        ArrayList<Estado> destinos = new ArrayList<>();
+        int i = 0;
+
+        for (Transicao transicao : transicoes) {
+            if (transicao.getCondicao().contains(String.valueOf(caractere)))
+                destinos.add(transicao.getDestino());
+        }
+        return destinos;
+    }
+
+    public void onPassoPasso(ActionEvent actionEvent) {
+        bt_manual.setDisable(true);
+        bt_automatico.setDisable(true);
+        bt_proximo.setDisable(false);
+        lb_resultado.setText("");
+
+        mapaEstados.values().forEach(estado -> {
+            Circle c = recuperarCirculoDoEstado(estado);
+            if (c != null) {
+                c.setFill(Color.LIGHTYELLOW);
+            }
+        });
+
+        i_manual = 0;
+        atuais_manual = new ArrayList<>();
+        atuais_manual.add(estadoInicialAtual);
+        estadoInicialAtual.getCirculo().setFill(Color.ORANGE);
+        palavra = tf_palavra.getText();
+    }
+
+    public void onProximoPasso(ActionEvent actionEvent) {
+        ArrayList<Transicao> transicoes;
+        int tam;
+        if(!atuais_manual.isEmpty() && i_manual<palavra.length()) {
+            tam = atuais_manual.size();
+            for (int j = 0; j < tam; j++) {
+                transicoes = atuais_manual.get(j).getTransicoes();
+                ArrayList<Estado> destinos = saida(transicoes, palavra.charAt(i_manual));
+                atuais_manual.addAll(destinos);
+            }
+            for (int j = 0; j < tam; j++) {
+                atuais_manual.getFirst().getCirculo().setFill(Color.LIGHTYELLOW);
+                atuais_manual.removeFirst();
+            }
+            for (Estado estado : atuais_manual)
+                estado.getCirculo().setFill(Color.ORANGE);
+            i_manual++;
+        }
+        if (i_manual == palavra.length()) {
+            bt_proximo.setDisable(true);
+            bt_manual.setDisable(false);
+            bt_automatico.setDisable(false);
+            if(palavra.isEmpty())
+                palavra ="ε";
+            int i = 0;
+            while (i < atuais_manual.size()&&(atuais_manual.get(i).getTipo() !=FINAL &&atuais_manual.get(i).getTipo() !=INICIAL_E_FINAL))
+                i++;
+            if (i < atuais_manual.size()) {
+                lb_resultado.setText("Palavra '" + palavra + "' aceita");
+                for (Estado s : atuais_manual)
+                    if (s.getTipo() == FINAL || s.getTipo() == INICIAL_E_FINAL)
+                        recuperarCirculoDoEstado(s).setFill(Color.LIGHTGREEN);
+                    else
+                        recuperarCirculoDoEstado(s).setFill(Color.LIGHTCORAL);
+            } else {
+                lb_resultado.setText("Palavra '" + palavra + "' não aceita");
+                for (Estado s : atuais_manual)
+                    recuperarCirculoDoEstado(s).setFill(Color.LIGHTCORAL);
             }
         }
+    }
+
+    public void onAutomatico(ActionEvent actionEvent) {
+        if (estadoInicialAtual != null) {
+            AtomicReference<String> palavra = new AtomicReference<>(tf_palavra.getText());
+            lb_resultado.setText("");
+
+            mapaEstados.values().forEach(estado -> {
+                Circle c = recuperarCirculoDoEstado(estado);
+                if (c != null) {
+                    c.setFill(Color.LIGHTYELLOW);
+                }
+            });
+
+            SequentialTransition animacaoSequencial = new SequentialTransition();
+            AtomicReference<ArrayList<Estado>> atuaisRef = new AtomicReference<>(new ArrayList<>());
+            atuaisRef.get().add(estadoInicialAtual);
+
+            Circle circuloInicial = recuperarCirculoDoEstado(estadoInicialAtual);
+            if (circuloInicial != null)
+                circuloInicial.setFill(Color.ORANGE);
+
+            for (char caractere : palavra.get().toCharArray()) {
+                PauseTransition passo = new PauseTransition(Duration.millis(800));
+                passo.setOnFinished(e -> {
+                    ArrayList<Estado> estadosAtuais = atuaisRef.get();
+                    if (!estadosAtuais.isEmpty()) {
+                        Set<Estado> proximoSet = new HashSet<>();
+                        for (Estado umEstadoAtual : estadosAtuais) {
+                            ArrayList<Estado> destinos = saida(umEstadoAtual.getTransicoes(), caractere);
+                            proximoSet.addAll(destinos);
+                        }
+                        ArrayList<Estado> proximosEstados = new ArrayList<>(proximoSet);
+                        for (Estado anterior : estadosAtuais) {
+                            Circle c = recuperarCirculoDoEstado(anterior);
+                            if (c != null)
+                                c.setFill(Color.LIGHTYELLOW);
+                        }
+                        for (Estado proximo : proximosEstados) {
+                            Circle c = recuperarCirculoDoEstado(proximo);
+                            if (c != null)
+                                c.setFill(Color.ORANGE);
+                        }
+                        atuaisRef.set(proximosEstados);
+                    }
+                });
+                animacaoSequencial.getChildren().add(passo);
+            }
+
+            animacaoSequencial.setOnFinished(e -> {
+                ArrayList<Estado> estadosFinais = atuaisRef.get();
+                boolean aceita = false;
+                for(Estado finalEstado : estadosFinais)
+                    if (finalEstado.getTipo() == FINAL || finalEstado.getTipo() == INICIAL_E_FINAL) {
+                        aceita = true;
+                        break;
+                    }
+                if (palavra.get().isEmpty())
+                    palavra.set("ε");
+                if (aceita) {
+                    lb_resultado.setText("Palavra '" + palavra + "' aceita");
+                    for(Estado s : estadosFinais)
+                        if (s.getTipo() == FINAL || s.getTipo() == INICIAL_E_FINAL)
+                            recuperarCirculoDoEstado(s).setFill(Color.LIGHTGREEN);
+                        else
+                            recuperarCirculoDoEstado(s).setFill(Color.LIGHTCORAL);
+                } else {
+                    lb_resultado.setText("Palavra '" + palavra + "' não aceita");
+                    for (Estado s : estadosFinais)
+                        recuperarCirculoDoEstado(s).setFill(Color.LIGHTCORAL);
+                }
+            });
+            animacaoSequencial.play();
+        }
+    }
+
+    public void onLimpar(ActionEvent actionEvent) {
+        estadoInicialAtual = null;
+        estadoOrigemLigacao = null;
+
+        g_estados.getChildren().clear();
+        g_transicoes.getChildren().clear();
+        mapaEstados.clear();
+        mapaTransicoes.clear();
+        listaTransicoesModelo.clear();
+        idsEmUso.clear();
+        lb_resultado.setText("");
+        tf_palavra.clear();
     }
 }
