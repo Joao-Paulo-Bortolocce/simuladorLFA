@@ -590,23 +590,25 @@ public class AutomatoController {
     }
 
     public void onPassoPasso(ActionEvent actionEvent) {
-        bt_manual.setDisable(true);
-        bt_automatico.setDisable(true);
-        bt_proximo.setDisable(false);
-        lb_resultado.setText("");
+        if (estadoInicialAtual != null) {
+            bt_manual.setDisable(true);
+            bt_automatico.setDisable(true);
+            bt_proximo.setDisable(false);
+            lb_resultado.setText("");
 
-        mapaEstados.values().forEach(estado -> {
-            Circle c = recuperarCirculoDoEstado(estado);
-            if (c != null) {
-                c.setFill(Color.LIGHTYELLOW);
-            }
-        });
+            mapaEstados.values().forEach(estado -> {
+                Circle c = recuperarCirculoDoEstado(estado);
+                if (c != null) {
+                    c.setFill(Color.LIGHTYELLOW);
+                }
+            });
 
-        i_manual = 0;
-        atuais_manual = new ArrayList<>();
-        atuais_manual.add(estadoInicialAtual);
-        estadoInicialAtual.getCirculo().setFill(Color.ORANGE);
-        palavra = tf_palavra.getText();
+            i_manual = 0;
+            atuais_manual = new ArrayList<>();
+            atuais_manual.add(estadoInicialAtual);
+            estadoInicialAtual.getCirculo().setFill(Color.ORANGE);
+            palavra = tf_palavra.getText();
+        }
     }
 
     public void onProximoPasso(ActionEvent actionEvent) {
@@ -619,6 +621,12 @@ public class AutomatoController {
                 ArrayList<Estado> destinos = saida(transicoes, palavra.charAt(i_manual));
                 atuais_manual.addAll(destinos);
             }
+            mapaEstados.values().forEach(estado -> {
+                Circle c = recuperarCirculoDoEstado(estado);
+                if (c != null) {
+                    c.setFill(Color.LIGHTYELLOW);
+                }
+            });
             for (int j = 0; j < tam; j++) {
                 atuais_manual.getFirst().getCirculo().setFill(Color.LIGHTYELLOW);
                 atuais_manual.removeFirst();
@@ -728,6 +736,10 @@ public class AutomatoController {
     public void onLimpar(ActionEvent actionEvent) {
         estadoInicialAtual = null;
         estadoOrigemLigacao = null;
+
+        bt_manual.setDisable(false);
+        bt_automatico.setDisable(false);
+        bt_proximo.setDisable(true);
 
         g_estados.getChildren().clear();
         g_transicoes.getChildren().clear();
