@@ -651,7 +651,7 @@ public class AutomatoController {
             i_manual++;
             lb[i_manual - 1].setStyle("-fx-text-fill: orange; -fx-font-size: 18px;");
         }
-        if (i_manual == palavra.length()) {
+        if (atuais_manual.isEmpty() || i_manual == palavra.length()) {
             bt_proximo.setDisable(true);
             bt_manual.setDisable(false);
             bt_automatico.setDisable(false);
