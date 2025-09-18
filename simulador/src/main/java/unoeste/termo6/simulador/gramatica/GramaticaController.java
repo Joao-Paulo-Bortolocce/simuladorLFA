@@ -1,7 +1,9 @@
 package unoeste.termo6.simulador.gramatica;
 
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -11,10 +13,24 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 
-public class GramaticaController {
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.ResourceBundle;
+
+public class GramaticaController implements Initializable {
 
     @FXML
     private VBox grammarsContainer; // Injeta o VBox principal do FXML
+
+    private ArrayList<Variavel> variaveis;
+
+    private static int id;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        variaveis = new ArrayList<>();
+        id=0;
+    }
 
     @FXML
     void addVariableRule(ActionEvent event) {
@@ -24,6 +40,21 @@ public class GramaticaController {
         TextField variableField = new TextField();
         variableField.setPromptText("Variável");
         variableField.setPrefWidth(80);
+        variableField.setId(""+id);
+        variaveis.add(new Variavel(""+id++,""));
+
+        variableField.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                int pos;
+                TextField alterado = (TextField)actionEvent.getSource();
+
+                for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(alterado.getId())!=0;pos++);
+
+                if(pos<variaveis.size())
+                    variaveis.get(pos).setNome(alterado.getText());
+            }
+        });
 
         Label arrowLabel = new Label("->");
         arrowLabel.setFont(new Font(14));
