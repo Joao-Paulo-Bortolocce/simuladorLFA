@@ -16,51 +16,33 @@ public class GramaticaController {
     @FXML
     private VBox grammarsContainer; // Injeta o VBox principal do FXML
 
-    /**
-     * Chamado quando o botão "+ Adicionar Variável" é clicado.
-     * Cria uma nova linha completa para uma nova variável da gramática.
-     */
     @FXML
     void addVariableRule(ActionEvent event) {
-        // HBox principal para a linha da variável
         HBox variableRow = new HBox(10);
         variableRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Campo para o nome da variável (ex: A, B, S)
         TextField variableField = new TextField();
         variableField.setPromptText("Variável");
         variableField.setPrefWidth(80);
 
-        // Seta "->"
         Label arrowLabel = new Label("->");
         arrowLabel.setFont(new Font(14));
 
-        // VBox para conter todas as transições desta variável
         VBox transitionsVBox = new VBox(5);
 
-        // Adiciona a primeira linha de transição obrigatória
         HBox firstTransition = createTransitionHBox();
         transitionsVBox.getChildren().add(firstTransition);
 
-        // Botão "+" para adicionar mais transições para ESTA variável
         Button addTransitionButton = new Button("+");
         addTransitionButton.setOnAction(e -> {
-            // A ação é adicionar uma nova linha de transição ao VBox de transições
             transitionsVBox.getChildren().add(createTransitionHBox());
         });
 
-        // Adiciona todos os componentes à linha da variável
         variableRow.getChildren().addAll(variableField, arrowLabel, transitionsVBox, addTransitionButton);
         HBox.setMargin(addTransitionButton, new Insets(0, 0, 0, 5));
 
-        // Adiciona a nova linha da variável ao container principal
         grammarsContainer.getChildren().add(variableRow);
     }
-
-    /**
-     * Método auxiliar que cria uma linha de transição (lê, transforma).
-     * @return um HBox contendo os campos para uma transição.
-     */
     private HBox createTransitionHBox() {
         HBox transitionRow = new HBox(5);
         transitionRow.setAlignment(Pos.CENTER_LEFT);
