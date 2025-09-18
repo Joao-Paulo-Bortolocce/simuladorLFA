@@ -7,6 +7,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import unoeste.termo6.simulador.automato.AutomatoController;
+import unoeste.termo6.simulador.gramatica.GramaticaController;
 import unoeste.termo6.simulador.regex.RegexController;
 
 import java.io.IOException;
@@ -25,6 +26,17 @@ public class MainController {
 
     public void onAutomato(ActionEvent actionEvent) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(AutomatoController.class.getResource("automato-view.fxml"));
+        Scene scene = new Scene(fxmlLoader.load());
+        Stage stage = new Stage();
+        stage.setTitle("Simulador");
+        stage.setMaximized(true);
+        stage.setScene(scene);
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.show();
+    }
+
+    public void onGramatica(ActionEvent actionEvent)throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(GramaticaController.class.getResource("gramatica-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         Stage stage = new Stage();
         stage.setTitle("Simulador");

@@ -14,4 +14,6 @@ module unoeste.termo6.simulador {
     opens unoeste.termo6.simulador.automato to javafx.fxml;
     exports unoeste.termo6.simulador.regex;
     opens unoeste.termo6.simulador.regex to javafx.fxml;
+    exports unoeste.termo6.simulador.gramatica;
+    opens unoeste.termo6.simulador.gramatica to javafx.fxml;
 }
