@@ -6,6 +6,7 @@ public class Variavel {
     private String id;
 
     public Variavel(String id,String nome, Lista transicao) {
+        this.id = id;
         this.nome = nome;
         this.transicao = transicao;
     }

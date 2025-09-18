@@ -78,23 +78,17 @@ public class GramaticaController implements Initializable {
         variableField.setPromptText("Variável");
         variableField.setPrefWidth(80);
         String variableId = "" + id++;
+        Variavel novaVariavel = new Variavel(variableId, "");
         variableField.setId(variableId);
-        variaveis.add(new Variavel(variableId,""));
+        variaveis.add(novaVariavel);
 
         variableField.textProperty().addListener((observable, oldValue, newValue) -> {
             int pos;
-            System.out.println("Alterando variável com ID: " + variableId);
-            for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId()!=null&&variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
-
-            String antigo = "";
+            for (pos=0;pos<variaveis.size() &&  variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
             if(pos<variaveis.size()){
-                antigo = variaveis.get(pos).getNome();
                 variaveis.get(pos).setNome(newValue);
             }
 
-
-            System.out.println("Variável " + antigo + " alterada para: " + newValue);
-            Show();
         });
 
         Label arrowLabel = new Label("->");
@@ -123,12 +117,11 @@ public class GramaticaController implements Initializable {
         No no = new No("",null,null);
         int pos;
 
-        for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId()!=null&&variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
+        for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
 
         if(pos<variaveis.size())
         {
             variaveis.get(pos).getTransicao().insere(no);
-            Show();
         }
 
         TextField readsField = new TextField();
@@ -136,7 +129,6 @@ public class GramaticaController implements Initializable {
         readsField.setPrefWidth(60);
         readsField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setLeitura(newValue);
-            Show();
         });
 
 
@@ -145,7 +137,6 @@ public class GramaticaController implements Initializable {
         becomesField.setPrefWidth(100);
         becomesField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setTransicao(newValue);
-            Show();
         });
 
         transitionRow.getChildren().addAll(readsField, becomesField);
@@ -176,8 +167,8 @@ public class GramaticaController implements Initializable {
                             String transicao = aux.getTransicao();
 
                             //verificar se não é a ultima letra da palavra a ser lida e se essa transicao for nula entao deve aprovar também
-                            if (!(i == palavra.length() - 1 && (transicao == null || transicao.isEmpty())))
-                                return false;
+                            if (i == palavra.length() - 1 && (transicao == null || transicao.isEmpty()))
+                                return true;
 
                             for (i = 0; i < variaveis.size() && variaveis.get(i).getNome().compareToIgnoreCase(var) != 0; i++)
                                 ;
@@ -190,6 +181,8 @@ public class GramaticaController implements Initializable {
                     }
                     aux=aux.getProx();
                 }
+                if (!encontrou)
+                    return false;
             }
         }
 
