@@ -1,7 +1,6 @@
 package unoeste.termo6.simulador.gramatica;
 
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -40,20 +39,17 @@ public class GramaticaController implements Initializable {
         TextField variableField = new TextField();
         variableField.setPromptText("Variável");
         variableField.setPrefWidth(80);
-        variableField.setId(""+id);
-        variaveis.add(new Variavel(""+id++,""));
+        String variableId = "" + id++;
+        variableField.setId(variableId);
+        variaveis.add(new Variavel(variableId,""));
 
-        variableField.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent actionEvent) {
-                int pos;
-                TextField alterado = (TextField)actionEvent.getSource();
+        variableField.textProperty().addListener((observable, oldValue, newValue) -> {
+            int pos;
+            for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId()!=null&&variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
 
-                for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(alterado.getId())!=0;pos++);
+            if(pos<variaveis.size())
+                variaveis.get(pos).setNome(newValue);
 
-                if(pos<variaveis.size())
-                    variaveis.get(pos).setNome(alterado.getText());
-            }
         });
 
         Label arrowLabel = new Label("->");
@@ -61,34 +57,62 @@ public class GramaticaController implements Initializable {
 
         VBox transitionsVBox = new VBox(5);
 
-        HBox firstTransition = createTransitionHBox();
+        HBox firstTransition = createTransitionHBox(variableId);
         transitionsVBox.getChildren().add(firstTransition);
 
         Button addTransitionButton = new Button("+");
         addTransitionButton.setOnAction(e -> {
-            transitionsVBox.getChildren().add(createTransitionHBox());
+            transitionsVBox.getChildren().add(createTransitionHBox(variableId));
         });
 
         variableRow.getChildren().addAll(variableField, arrowLabel, transitionsVBox, addTransitionButton);
         HBox.setMargin(addTransitionButton, new Insets(0, 0, 0, 5));
-
         grammarsContainer.getChildren().add(variableRow);
     }
-    private HBox createTransitionHBox() {
+
+    private HBox createTransitionHBox(String variableId) {
         HBox transitionRow = new HBox(5);
         transitionRow.setAlignment(Pos.CENTER_LEFT);
 
-        // Campo para o que a variável vai ler (ex: a, b, ε)
+        No no = new No("",null,null);
+        int pos;
+
+        for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId()!=null&&variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
+
+        if(pos<variaveis.size())
+        {
+            variaveis.get(pos).getTransicao().insere(no);
+        }
+
         TextField readsField = new TextField();
         readsField.setPromptText("Lê");
         readsField.setPrefWidth(60);
+        readsField.textProperty().addListener((observable, oldValue, newValue) -> {
+            no.setLeitura(newValue);
+        });
 
-        // Campo para no que a variável vai se transformar (ex: aB, B)
+
         TextField becomesField = new TextField();
         becomesField.setPromptText("Transforma");
         becomesField.setPrefWidth(100);
+        becomesField.textProperty().addListener((observable, oldValue, newValue) -> {
+            no.setTransicao(newValue);
+        });
 
         transitionRow.getChildren().addAll(readsField, becomesField);
         return transitionRow;
+    }
+
+    //exibir no console as variaveis e suas transicoes
+    private void Show (){
+        for (Variavel variavel : variaveis) {
+            System.out.print(variavel.getNome() + " -> ");
+            No aux = variavel.getTransicao().getCabeca();
+            while (aux != null) {
+                System.out.print("[" + aux.getLeitura() + " : " + aux.getTransicao() + "] ");
+                aux = aux.getProx();
+            }
+            System.out.println();
+        }
     }
 }
