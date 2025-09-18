@@ -45,6 +45,7 @@
                 <HBox alignment="CENTER" spacing="10.0">
                     <children>
                         <TextField fx:id="wordField" promptText="Digite a palavra" />
+                        <TextField fx:id="variavelInicial" promptText="Digite a variavel inicial" />
                         <Button fx:id="verifyButton" mnemonicParsing="false" onAction="#verifyWord" text="Verificar Palavra" />
                         <Button fx:id="generateButton" mnemonicParsing="false" onAction="#generateWords" text="Gerar 10 Palavras" />
                     </children>

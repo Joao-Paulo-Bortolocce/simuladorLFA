@@ -26,21 +26,23 @@ public class GramaticaController implements Initializable {
     @FXML
     private TextField wordField;
 
-    // ATRIBUTOS FXML PARA A ÁREA DE RESULTADOS ATUALIZADOS
     @FXML
     private VBox resultsPane;
 
     @FXML
-    private VBox verificationResultBox; // Container superior
+    private VBox verificationResultBox;
 
     @FXML
     private Label resultLabel;
 
     @FXML
-    private VBox generationResultBox; // Container inferior
+    private VBox generationResultBox;
 
     @FXML
     private ListView<String> generatedWordsListView;
+
+    @FXML
+    private TextField variavelInicial;
 
     private ArrayList<Variavel> variaveis;
 
@@ -50,7 +52,6 @@ public class GramaticaController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         variaveis = new ArrayList<>();
         id = 0;
-        // Esconde o painel principal e as seções no início
         resultsPane.setVisible(false);
         resultsPane.setManaged(false);
 
@@ -68,7 +69,6 @@ public class GramaticaController implements Initializable {
         }
     }
 
-    // ... (código addVariableRule e createTransitionHBox permanecem os mesmos) ...
     @FXML
     void addVariableRule(ActionEvent event) {
         HBox variableRow = new HBox(10);
@@ -83,11 +83,18 @@ public class GramaticaController implements Initializable {
 
         variableField.textProperty().addListener((observable, oldValue, newValue) -> {
             int pos;
+            System.out.println("Alterando variável com ID: " + variableId);
             for (pos=0;pos<variaveis.size() && variaveis.get(pos).getId()!=null&&variaveis.get(pos).getId().compareToIgnoreCase(variableId)!=0;pos++);
 
-            if(pos<variaveis.size())
+            String antigo = "";
+            if(pos<variaveis.size()){
+                antigo = variaveis.get(pos).getNome();
                 variaveis.get(pos).setNome(newValue);
+            }
 
+
+            System.out.println("Variável " + antigo + " alterada para: " + newValue);
+            Show();
         });
 
         Label arrowLabel = new Label("->");
@@ -101,6 +108,7 @@ public class GramaticaController implements Initializable {
         Button addTransitionButton = new Button("+");
         addTransitionButton.setOnAction(e -> {
             transitionsVBox.getChildren().add(createTransitionHBox(variableId));
+
         });
 
         variableRow.getChildren().addAll(variableField, arrowLabel, transitionsVBox, addTransitionButton);
@@ -120,6 +128,7 @@ public class GramaticaController implements Initializable {
         if(pos<variaveis.size())
         {
             variaveis.get(pos).getTransicao().insere(no);
+            Show();
         }
 
         TextField readsField = new TextField();
@@ -127,6 +136,7 @@ public class GramaticaController implements Initializable {
         readsField.setPrefWidth(60);
         readsField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setLeitura(newValue);
+            Show();
         });
 
 
@@ -135,10 +145,55 @@ public class GramaticaController implements Initializable {
         becomesField.setPrefWidth(100);
         becomesField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setTransicao(newValue);
+            Show();
         });
 
         transitionRow.getChildren().addAll(readsField, becomesField);
         return transitionRow;
+    }
+
+    public boolean aceita(String palavra){
+        //deve começar com a variavel inicial que o user escolheu
+        String var = variavelInicial.getText();
+        if (!var.isEmpty()){
+            int i;
+            for (i = 0; i < variaveis.size() && variaveis.get(i).getNome().compareToIgnoreCase(var) != 0; i++) ;
+
+            if (i==variaveis.size())
+                return false;
+
+            Variavel variavel = variaveis.get(i);
+
+            for (i = 0; i < palavra.length(); i++) {
+                char letra = palavra.charAt(i);
+                No aux = variavel.getTransicao().getCabeca();
+                //verificar se na lista adjacente tem essa letra, se tiver muda a variavel atual para a transicao, se nao tiver retorna falso
+                boolean encontrou = false;
+                while (aux!=null && !encontrou){
+                    if (!aux.getLeitura().isEmpty()) {
+                        if (aux.getLeitura().charAt(0) == letra) {
+                            encontrou = true;
+                            String transicao = aux.getTransicao();
+
+                            //verificar se não é a ultima letra da palavra a ser lida e se essa transicao for nula entao deve aprovar também
+                            if (!(i == palavra.length() - 1 && (transicao == null || transicao.isEmpty())))
+                                return false;
+
+                            for (i = 0; i < variaveis.size() && variaveis.get(i).getNome().compareToIgnoreCase(var) != 0; i++)
+                                ;
+
+                            if (i == variaveis.size())
+                                return false;
+
+                            variavel = variaveis.get(i);
+                        }
+                    }
+                    aux=aux.getProx();
+                }
+            }
+        }
+
+        return true;
     }
 
 
@@ -155,8 +210,7 @@ public class GramaticaController implements Initializable {
             return;
         }
 
-        //verificar se aceita a palavra
-
+        boolean aceita= aceita(palavra);
 
         if (aceita) {
             resultLabel.setText("A palavra '" + palavra + "' é ACEITA!");
