@@ -48,6 +48,7 @@
                         <TextField fx:id="variavelInicial" promptText="Digite a variavel inicial" />
                         <Button fx:id="verifyButton" mnemonicParsing="false" onAction="#verifyWord" text="Verificar Palavra" />
                         <Button fx:id="generateButton" mnemonicParsing="false" onAction="#generateWords" text="Gerar 10 Palavras" />
+                        <Button fx:id="generateFormalismButton" mnemonicParsing="false" onAction="#generateFormalism" text="Gerar Formalismo" />
                     </children>
                 </HBox>
             </children>
@@ -71,6 +72,25 @@
                         <Font name="System Bold" size="18.0" />
                     </font>
                 </Label>
+
+                <VBox fx:id="formalismResultBox" managed="false" spacing="5.0" visible="false">
+                    <children>
+                        <Separator prefWidth="200.0" />
+                        <Label text="Formalismo da Gramática" textFill="#CCCCCC">
+                            <font>
+                                <Font name="System Italic" size="13.0" />
+                            </font>
+                            <VBox.margin>
+                                <Insets top="5.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label fx:id="formalismLabel" alignment="CENTER" maxWidth="1.7976931348623157E308" style="-fx-text-fill: #E0E0E0;" textAlignment="CENTER" wrapText="true">
+                            <font>
+                                <Font size="14.0" />
+                            </font>
+                        </Label>
+                    </children>
+                </VBox>
 
                 <VBox fx:id="verificationResultBox" managed="false" spacing="5.0" visible="false">
                     <children>

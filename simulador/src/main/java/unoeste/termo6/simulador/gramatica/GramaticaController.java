@@ -16,6 +16,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
+// A importação do Optional foi removida
+// import java.util.Optional;
+
 public class GramaticaController implements Initializable {
 
     @FXML
@@ -42,6 +45,12 @@ public class GramaticaController implements Initializable {
     @FXML
     private TextField variavelInicial;
 
+    @FXML
+    private VBox formalismResultBox;
+
+    @FXML
+    private Label formalismLabel;
+
     private ArrayList<Variavel> variaveis;
 
     private static int id;
@@ -61,6 +70,9 @@ public class GramaticaController implements Initializable {
 
         generationResultBox.setVisible(false);
         generationResultBox.setManaged(false);
+
+        formalismResultBox.setVisible(false);
+        formalismResultBox.setManaged(false);
     }
 
     private void showResultsPane() {
@@ -68,6 +80,47 @@ public class GramaticaController implements Initializable {
             resultsPane.setVisible(true);
             resultsPane.setManaged(true);
         }
+    }
+
+    @FXML
+    void generateFormalism(ActionEvent event) {
+        showResultsPane(); // Mostra o painel lateral de resultados
+        formalismResultBox.setVisible(true); // Deixa a seção de formalismo visível
+        formalismResultBox.setManaged(true);
+
+        String formalismo = gerarStringFormalismo(); // Chama a função que você vai implementar
+
+        formalismLabel.setText(formalismo); // Exibe o resultado no Label
+    }
+
+    private String gerarStringFormalismo() {
+        String formalismo = "G = (";
+        gerarAlfabeto();
+
+        String variaveisStr = "{";
+        for (int i = 0; i < variaveis.size(); i++) {
+            variaveisStr += variaveis.get(i).getNome();
+            if (i < variaveis.size() - 1) {
+                variaveisStr += ", ";
+            }
+        }
+        variaveisStr += "}";
+        formalismo += variaveisStr + ", ";
+        String alfabetoStr = "{";
+        for (int i = 0; i < alfabeto.size(); i++) {
+            alfabetoStr += alfabeto.get(i);
+            if (i < alfabeto.size() - 1) {
+                alfabetoStr += ", ";
+            }
+        }
+        alfabetoStr += "}";
+        formalismo += alfabetoStr + ", ";
+        formalismo += "P, ";
+        String varInicial = variavelInicial.getText().isEmpty() ? " " : variavelInicial.getText();
+        formalismo += varInicial;
+
+        formalismo+= ")";
+        return formalismo;
     }
 
     @FXML
@@ -85,12 +138,10 @@ public class GramaticaController implements Initializable {
 
         variableField.textProperty().addListener((observable, oldValue, newValue) -> {
             int pos;
-            for (pos = 0; pos < variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId) != 0; pos++)
-                ;
+            for (pos = 0; pos < variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId) != 0; pos++);
             if (pos < variaveis.size()) {
                 variaveis.get(pos).setNome(newValue);
             }
-
         });
 
         Label arrowLabel = new Label("->");
@@ -98,29 +149,34 @@ public class GramaticaController implements Initializable {
 
         VBox transitionsVBox = new VBox(5);
 
-        HBox firstTransition = createTransitionHBox(variableId);
+        HBox firstTransition = createTransitionHBox(variableId, transitionsVBox);
         transitionsVBox.getChildren().add(firstTransition);
 
         Button addTransitionButton = new Button("+");
         addTransitionButton.setOnAction(e -> {
-            transitionsVBox.getChildren().add(createTransitionHBox(variableId));
-
+            transitionsVBox.getChildren().add(createTransitionHBox(variableId, transitionsVBox));
         });
 
-        variableRow.getChildren().addAll(variableField, arrowLabel, transitionsVBox, addTransitionButton);
+        Button deleteVariableButton = new Button("X");
+        deleteVariableButton.setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+        deleteVariableButton.setOnAction(e -> {
+            variaveis.removeIf(variavel -> variavel.getId().equals(variableId));
+            grammarsContainer.getChildren().remove(variableRow);
+        });
+
+        variableRow.getChildren().addAll(variableField, arrowLabel, transitionsVBox, addTransitionButton, deleteVariableButton);
         HBox.setMargin(addTransitionButton, new Insets(0, 0, 0, 5));
         grammarsContainer.getChildren().add(variableRow);
     }
 
-    private HBox createTransitionHBox(String variableId) {
+    private HBox createTransitionHBox(String variableId, VBox parentContainer) {
         HBox transitionRow = new HBox(5);
         transitionRow.setAlignment(Pos.CENTER_LEFT);
 
         No no = new No("", null, null);
-        int pos;
 
-        for (pos = 0; pos < variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId) != 0; pos++)
-            ;
+        int pos;
+        for (pos = 0; pos < variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId) != 0; pos++);
 
         if (pos < variaveis.size()) {
             variaveis.get(pos).getTransicao().insere(no);
@@ -141,17 +197,27 @@ public class GramaticaController implements Initializable {
             no.setTransicao(newValue);
         });
 
-        transitionRow.getChildren().addAll(readsField, becomesField);
+        Button deleteTransitionButton = new Button("x");
+        deleteTransitionButton.setStyle("-fx-font-size: 10px; -fx-text-fill: red; -fx-font-weight: bold;");
+        deleteTransitionButton.setOnAction(e -> {
+            int p;
+            for (p = 0; p < variaveis.size() && variaveis.get(p).getId().compareToIgnoreCase(variableId) != 0; p++);
+
+            if (p < variaveis.size()) {
+                variaveis.get(p).getTransicao().excluir(no);
+            }
+
+            parentContainer.getChildren().remove(transitionRow);
+        });
+
+        transitionRow.getChildren().addAll(readsField, becomesField, deleteTransitionButton);
         return transitionRow;
     }
 
     private void addAlfabeto(String newValue) {
-        if(newValue!=""){
-
-            int i;
-            for (i = 0; i < alfabeto.size() && newValue.compareToIgnoreCase(alfabeto.get(i)) > 0; i++) ;
-            if (i == alfabeto.size() || alfabeto.get(i).compareToIgnoreCase(newValue )!=0) {
-                alfabeto.add(i,newValue);
+        if(newValue!=null && !newValue.isEmpty()){
+            if (!alfabeto.contains(newValue)) {
+                alfabeto.add(newValue);
             }
         }
 
@@ -183,6 +249,7 @@ public class GramaticaController implements Initializable {
                 //verificar se na lista adjacente tem essa letra, se tiver muda a variavel atual para a transicao, se nao tiver retorna falso
                 boolean encontrou = false;
                 while (aux != null && !encontrou) {
+                    //se for uma transicao vazia
                     if (!aux.getLeitura().isEmpty()) {
                         if (aux.getLeitura().charAt(0) == letra) {
                             encontrou = true;
@@ -251,8 +318,6 @@ public class GramaticaController implements Initializable {
                 }
                 else{
 
-
-
                     boolean aceita = aceita(palavra);
 
                     if (aceita) {
@@ -268,11 +333,12 @@ public class GramaticaController implements Initializable {
     }
 
     private void gerarAlfabeto() {
-        for (int i = 0; i < variaveis.size(); i++) {
-            No aux= variaveis.get(i).getTransicao().getCabeca();
-            while(aux!=null ){
+        alfabeto.clear(); // Limpa o alfabeto antes de gerar novamente
+        for (Variavel variavel : variaveis) {
+            No aux = variavel.getTransicao().getCabeca();
+            while (aux != null) {
                 addAlfabeto(aux.getLeitura());
-                aux=aux.getProx();
+                aux = aux.getProx();
             }
         }
     }
@@ -322,34 +388,26 @@ public class GramaticaController implements Initializable {
                     for (; flag && ini < testadas.size() && cont < 10; ini++) {
                         for (int j = 0; flag && j < alfabeto.size() && cont < 10; j++) {
                             palavra = testadas.get(ini) + alfabeto.get(j);
-                            testadas.add(palavra);
-                            if (aceita(palavra)) {
-                                palavrasGeradas.add(palavra);
-                                cont++;
-                            } else if (palavra.length() > 10) {
-                                flag = false;
+                            if (!testadas.contains(palavra)) { // Evitar repetições e loops infinitos
+                                testadas.add(palavra);
+                                if (aceita(palavra)) {
+                                    palavrasGeradas.add(palavra);
+                                    cont++;
+                                } else if (palavra.length() > 10) { // Limite de profundidade para evitar travamentos
+                                    flag = false;
+                                }
                             }
-                            System.out.println(palavra);
                         }
                     }
+                    if (ini >= testadas.size()){ // Se não houver mais palavras para testar, para o loop
+                        flag = false;
+                    }
                 }
-                if (palavrasGeradas.get(0).compareTo("") == 0) {
+                if (!palavrasGeradas.isEmpty() && palavrasGeradas.get(0).compareTo("") == 0) {
                     palavrasGeradas.set(0, "ε");
                 }
                 generatedWordsListView.setItems(FXCollections.observableArrayList(palavrasGeradas));
             }
-        }
-    }
-
-    private void Show() {
-        for (Variavel variavel : variaveis) {
-            System.out.print(variavel.getNome() + " -> ");
-            No aux = variavel.getTransicao().getCabeca();
-            while (aux != null) {
-                System.out.print("[" + aux.getLeitura() + " : " + aux.getTransicao() + "] ");
-                aux = aux.getProx();
-            }
-            System.out.println();
         }
     }
 }
