@@ -301,11 +301,7 @@ public class GramaticaController implements Initializable {
             verificationResultBox.setManaged(true);
 
             String palavra = wordField.getText();
-            if (palavra.isEmpty()) {
-                resultLabel.setText("Por favor, digite uma palavra.");
-                resultLabel.setStyle("-fx-text-fill: #FFC107;");
-            }
-            else{
+
                 int j;
                 for (j = 0; j < variaveis.size() && variaveis.get(j).getNome().compareToIgnoreCase(variavelInicial.getText()) != 0; j++);
 
@@ -321,6 +317,8 @@ public class GramaticaController implements Initializable {
                     boolean aceita = aceita(palavra);
 
                     if (aceita) {
+                        if(palavra.isEmpty())
+                            palavra="ε";
                         resultLabel.setText("A palavra '" + palavra + "' é ACEITA!");
                         resultLabel.setStyle("-fx-text-fill: #8BC34A; -fx-font-weight: bold;"); // Verde para sucesso
                     } else {
@@ -328,7 +326,7 @@ public class GramaticaController implements Initializable {
                         resultLabel.setStyle("-fx-text-fill: #F44336; -fx-font-weight: bold;"); // Vermelho para falha
                     }
                 }
-            }
+
         }
     }
 
