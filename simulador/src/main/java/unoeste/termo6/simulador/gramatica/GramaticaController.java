@@ -136,6 +136,11 @@ public class GramaticaController implements Initializable {
         variableField.setId(variableId);
         variaveis.add(novaVariavel);
 
+        variableField.setTextFormatter(new TextFormatter<String>(change -> {
+            change.setText(change.getText().toUpperCase());
+            return change;
+        }));
+
         variableField.textProperty().addListener((observable, oldValue, newValue) -> {
             int pos;
             for (pos = 0; pos < variaveis.size() && variaveis.get(pos).getId().compareToIgnoreCase(variableId) != 0; pos++);
@@ -182,17 +187,26 @@ public class GramaticaController implements Initializable {
             variaveis.get(pos).getTransicao().insere(no);
         }
 
+        // Campo de leitura (sempre minúsculo)
         TextField readsField = new TextField();
         readsField.setPromptText("Lê");
         readsField.setPrefWidth(60);
+        readsField.setTextFormatter(new TextFormatter<String>(change -> {
+            change.setText(change.getText().toLowerCase()); // força minúsculas
+            return change;
+        }));
         readsField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setLeitura(newValue);
         });
 
-
+        // Campo de produção (sempre MAIÚSCULO)
         TextField becomesField = new TextField();
-        becomesField.setPromptText("Transforma");
+        becomesField.setPromptText("Produção");
         becomesField.setPrefWidth(100);
+        becomesField.setTextFormatter(new TextFormatter<String>(change -> {
+            change.setText(change.getText().toUpperCase()); // força maiúsculas
+            return change;
+        }));
         becomesField.textProperty().addListener((observable, oldValue, newValue) -> {
             no.setTransicao(newValue);
         });
@@ -213,6 +227,7 @@ public class GramaticaController implements Initializable {
         transitionRow.getChildren().addAll(readsField, becomesField, deleteTransitionButton);
         return transitionRow;
     }
+
 
     private void addAlfabeto(String newValue) {
         if(newValue!=null && !newValue.isEmpty()){
